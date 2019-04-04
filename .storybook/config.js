@@ -12,13 +12,16 @@ setOptions({
   sidebarAnimations: false,
 });
 
+import 'vuetify/dist/vuetify.min.css'
 import 'instantsearch.css/themes/algolia-min.css';
 import './styles.css';
 
 import Vue from 'vue';
+import Vuetify from 'vuetify'
 import InstantSearch from '../src/instantsearch';
 
 Vue.config.productionTip = false;
+Vue.use(Vuetify)
 Vue.use(InstantSearch);
 
 const req = require.context('../stories', true, /\.stories\.js$/);
