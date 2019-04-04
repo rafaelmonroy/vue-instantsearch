@@ -5,7 +5,7 @@
   >
     <slot
       v-bind="state"
-      :results="state.instantSearchInstance.helper.lastResults"
+      :results="results"
     >
       <span :class="suit('text')">{{ state.nbHits.toLocaleString() }} results found in {{ state.processingTimeMS.toLocaleString() }}ms</span>
     </slot>
@@ -26,6 +26,10 @@ export default {
   computed: {
     widgetParams() {
       return {};
+    },
+    results() {
+      // THIS IS ABSOLURETLY WRONG
+      return this.state.instantSearchInstance.tree.helper.lastResults;
     },
   },
 };
