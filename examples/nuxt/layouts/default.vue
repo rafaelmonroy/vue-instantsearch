@@ -2,7 +2,8 @@
   <div>
     <div id="nav">
       <nuxt-link to="/">Home</nuxt-link> |
-      <nuxt-link to="/search">Search</nuxt-link>
+      <nuxt-link to="/search">Search</nuxt-link> |
+      <nuxt-link to="/search-2">Search 2</nuxt-link>
     </div>
     <nuxt />
   </div>
