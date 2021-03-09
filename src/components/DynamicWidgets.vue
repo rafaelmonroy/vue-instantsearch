@@ -1,11 +1,11 @@
 <template>
   <div
     class="ais-DynamicWidgets"
-    v-if="state"
+    v-show="state"
   >
     <div
       class="ais-DynamicWidgets-widget"
-      v-for="attribute in state.attributesToRender"
+      v-for="attribute in attributesToRender"
       :key="attribute"
     >
       <slot :name="attribute" />
@@ -120,7 +120,6 @@ const connectDynamicWidgets = function connectDynamicWidgets(
 };
 
 export default {
-  name: 'AisDynamicWidgets',
   mixins: [createWidgetMixin({ connector: connectDynamicWidgets })],
   props: {
     transformItems: {
@@ -131,10 +130,17 @@ export default {
     },
   },
   computed: {
+    attributesToRender() {
+      if (this.state) {
+        return this.state.attributesToRender;
+      }
+      // render all widgets (hidden) before first render
+      return Object.keys(this.$slots);
+    },
     widgetParams() {
       return {
         transformItems: this.transformItems,
-        // TODO: we basically don't need to pass widgets here, since Vue renders them conditionally already
+        // we do not pass "widgets" to the connector, since Vue is in charge of rendering
         widgets: [],
       };
     },
