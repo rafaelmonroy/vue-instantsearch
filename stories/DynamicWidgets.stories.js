@@ -6,9 +6,9 @@ storiesOf('ais-dynamic-widgets', module)
   .add('simple usage', () => ({
     template: `
     <ais-dynamic-widgets :transform-items="transformItems">
-      <ais-refinement-list slot="brand" attribute="brand"></ais-refinement-list>
-      <ais-menu slot="categories" attribute="categories"></ais-menu>
-      <ais-panel slot="hierarchicalCategories.lvl0">
+      <ais-refinement-list attribute="brand"></ais-refinement-list>
+      <ais-menu attribute="categories"></ais-menu>
+      <ais-panel>
         <template slot="header">hierarchy</template>
         <ais-hierarchical-menu :attributes="hierarchicalCategories"></ais-hierarchical-menu>
       </ais-panel>

@@ -1,20 +1,5 @@
-<template>
-  <div
-    class="ais-DynamicWidgets"
-    v-show="state"
-  >
-    <div
-      class="ais-DynamicWidgets-widget"
-      v-for="attribute in attributesToRender"
-      :key="attribute"
-    >
-      <slot :name="attribute" />
-    </div>
-  </div>
-</template>
-
-<script>
 import { createWidgetMixin } from '../mixins/widget';
+
 function getAttribute(widget, initOptions) {
   try {
     const { widgetParams } = widget.getWidgetRenderState(initOptions);
@@ -119,7 +104,31 @@ const connectDynamicWidgets = function connectDynamicWidgets(
   };
 };
 
+function getVueAttribute(vnode) {
+  if (!vnode.componentOptions) {
+    return undefined;
+  }
+
+  if (vnode.componentOptions.propsData.attribute) {
+    return vnode.componentOptions.propsData.attribute;
+  }
+  if (Array.isArray(vnode.componentOptions.propsData.attributes)) {
+    return vnode.componentOptions.propsData.attributes[0];
+  }
+
+  if (Array.isArray(vnode.componentOptions.children)) {
+    // return first child with a truthy attribute
+    return vnode.componentOptions.children.reduce(
+      (acc, curr) => (acc ? acc : getVueAttribute(curr)),
+      undefined
+    );
+  }
+
+  return undefined;
+}
+
 export default {
+  name: 'AisDynamicWidgets',
   mixins: [createWidgetMixin({ connector: connectDynamicWidgets })],
   props: {
     transformItems: {
@@ -129,14 +138,28 @@ export default {
       },
     },
   },
+  render(createElement) {
+    if (!this.state) {
+      return createElement(
+        'div',
+        { attrs: { hidden: true } },
+        this.$slots.default
+      );
+    }
+
+    const components = new Map();
+    this.$slots.default.forEach(vnode => {
+      const attribute = getVueAttribute(vnode);
+      if (attribute) components.set(attribute, vnode);
+    });
+
+    return createElement(
+      'div',
+      {},
+      this.state.attributesToRender.map(attribute => components.get(attribute))
+    );
+  },
   computed: {
-    attributesToRender() {
-      if (this.state) {
-        return this.state.attributesToRender;
-      }
-      // render all widgets (hidden) before first render
-      return Object.keys(this.$slots);
-    },
     widgetParams() {
       return {
         transformItems: this.transformItems,
@@ -146,4 +169,3 @@ export default {
     },
   },
 };
-</script>
