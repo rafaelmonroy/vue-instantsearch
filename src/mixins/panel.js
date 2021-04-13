@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import mitt from 'mitt';
 
 export const PANEL_EMITTER_NAMESPACE = 'instantSearchPanelEmitter';
 export const PANEL_CHANGE_EVENT = 'PANEL_CHANGE_EVENT';
@@ -9,9 +9,7 @@ export const createPanelProviderMixin = () => ({
       type: Object,
       required: false,
       default() {
-        return new Vue({
-          name: 'PanelProvider',
-        });
+        return mitt();
       },
     },
   },
@@ -26,12 +24,12 @@ export const createPanelProviderMixin = () => ({
     };
   },
   created() {
-    this.emitter.$on(PANEL_CHANGE_EVENT, value => {
+    this.emitter.on(PANEL_CHANGE_EVENT, value => {
       this.updateCanRefine(value);
     });
   },
   beforeDestroy() {
-    this.emitter.$destroy();
+    this.emitter.all.clear();
   },
   methods: {
     updateCanRefine(value) {
@@ -46,7 +44,7 @@ export const createPanelConsumerMixin = ({ mapStateToCanRefine }) => ({
       from: PANEL_EMITTER_NAMESPACE,
       default() {
         return {
-          $emit: () => {},
+          emit: () => {},
         };
       },
     },
@@ -58,19 +56,22 @@ export const createPanelConsumerMixin = ({ mapStateToCanRefine }) => ({
     };
   },
   watch: {
-    state(nextState, previousState) {
-      if (!previousState || !nextState) {
-        return;
-      }
+    state: {
+      immediate: true,
+      handler(nextState, previousState) {
+        if (!nextState) {
+          return;
+        }
 
-      const previousCanRefine = mapStateToCanRefine(previousState);
-      const nextCanRefine = mapStateToCanRefine(nextState);
+        const previousCanRefine = mapStateToCanRefine(previousState || {});
+        const nextCanRefine = mapStateToCanRefine(nextState);
 
-      if (!this.hasAlreadyEmitted || previousCanRefine !== nextCanRefine) {
-        this.emitter.$emit(PANEL_CHANGE_EVENT, nextCanRefine);
+        if (!this.hasAlreadyEmitted || previousCanRefine !== nextCanRefine) {
+          this.emitter.emit(PANEL_CHANGE_EVENT, nextCanRefine);
 
-        this.hasAlreadyEmitted = true;
-      }
+          this.hasAlreadyEmitted = true;
+        }
+      },
     },
   },
 });
