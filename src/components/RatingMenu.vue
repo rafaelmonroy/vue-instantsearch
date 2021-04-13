@@ -33,7 +33,7 @@
           :class="[suit('item'), item.isRefined && suit('item', 'selected')]"
         >
           <a
-            :href="state.createURL(item)"
+            :href="state.createURL(item.value)"
             :aria-label="`${item.value} & Up`"
             :class="suit('link')"
             @click.prevent="state.refine(item.value)"
@@ -88,7 +88,7 @@ export default {
     createSuitMixin({ name: 'RatingMenu' }),
     createWidgetMixin({ connector: connectRatingMenu }),
     createPanelConsumerMixin({
-      mapStateToCanRefine: state => !state.hasNoResults,
+      mapStateToCanRefine: state => state.hasNoResults === false,
     }),
   ],
   props: {
