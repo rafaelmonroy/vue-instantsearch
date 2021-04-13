@@ -10,18 +10,18 @@
 </template>
 
 <script>
-import { parseAlgoliaHit } from "../util/parseAlgoliaHit";
-import * as Vue from "vue";
+import { parseAlgoliaHit } from '../util/parseAlgoliaHit';
+import { getVueVersion } from '../util/getVueVersion';
 
 const TextNode =
-  Vue.version && Vue.version.split(".")[0] === "3"
+  getVueVersion().split('.')[0] === '3'
     ? (props, context) => context.slots.default()
     : {
         functional: true,
         render(createElement, context) {
           const slots = context.slots();
           return slots.default;
-        }
+        },
       };
 
 export default {
