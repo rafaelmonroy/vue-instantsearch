@@ -14,6 +14,7 @@
         @reset="$emit('reset')"
         :placeholder="placeholder"
         :autofocus="autofocus"
+        :search-as-you-type="searchAsYouType"
         :show-loading-indicator="showLoadingIndicator"
         :should-show-loading-indicator="state.isSearchStalled"
         :submit-title="submitTitle"
@@ -59,6 +60,10 @@ export default {
       default: 'Search here…',
     },
     autofocus: {
+      type: Boolean,
+      default: false,
+    },
+    searchAsYouType: {
       type: Boolean,
       default: false,
     },
